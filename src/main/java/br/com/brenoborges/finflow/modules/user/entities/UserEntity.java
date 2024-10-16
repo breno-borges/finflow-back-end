@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
+import br.com.brenoborges.finflow.modules.user.dtos.ProfileRequestDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.persistence.Entity;
@@ -58,5 +59,13 @@ public class UserEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public UserEntity(ProfileRequestDTO profileRequestDTO) {
+        this.name = profileRequestDTO.name();
+        this.age = profileRequestDTO.age();
+        this.email = profileRequestDTO.email();
+        this.gender = profileRequestDTO.gender();
+        this.password = profileRequestDTO.password();
+    }
 
 }
