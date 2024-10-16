@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     private CreateUserUseCase createUserUseCase;
 
-    @PostMapping("/signIn")
+    @PostMapping("/signUp")
     public ResponseEntity<Object> signIn(@Valid @RequestBody ProfileRequestDTO profileRequestDTO) {
         UserEntity newUser = new UserEntity(profileRequestDTO);
 
