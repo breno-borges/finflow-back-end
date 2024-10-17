@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.validator.constraints.Length;
 
 import br.com.brenoborges.finflow.modules.user.dtos.ProfileRequestDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +13,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,14 +32,12 @@ public class UserEntity {
     @Schema(example = "Zezinho Santos", requiredMode = RequiredMode.REQUIRED, description = "Nome do usuario")
     private String name;
 
-    @Email(message = "O campo [email] deve conter um e-mail válido!")
     @Schema(example = "email@email.com", requiredMode = RequiredMode.REQUIRED, description = "E-mail do usuario")
     private String email;
 
     @Schema(example = "22", description = "Idade do usuario")
     private int age;
 
-    @Length(min = 6, message = "A senha deve conter no minimo (6) caracteres")
     @Schema(example = "123456", minLength = 6, requiredMode = RequiredMode.REQUIRED, description = "Senha do usuario")
     private String password;
 

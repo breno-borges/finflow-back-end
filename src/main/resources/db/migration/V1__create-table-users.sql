@@ -1,5 +1,5 @@
 CREATE TABLE users(
-    id_user UUID,
+    id_user UUID NOT NULL,
     name VARCHAR(50) NOT NULL,
     email VARCHAR(30) NOT NULL UNIQUE,
     age INTEGER,
