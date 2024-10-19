@@ -15,7 +15,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import br.com.brenoborges.finflow.modules.user.dtos.LoginRequestDTO;
-import br.com.brenoborges.finflow.modules.user.dtos.LoginResponseDTO;
+import br.com.brenoborges.finflow.modules.user.dtos.AccessTokenDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
 
@@ -44,7 +44,7 @@ public class AuthTokenUseCase {
                 .sign(algorithm);
     }
 
-    public LoginResponseDTO loginToken(LoginRequestDTO loginRequestDTO) throws AuthenticationException {
+    public AccessTokenDTO loginToken(LoginRequestDTO loginRequestDTO) throws AuthenticationException {
         UserEntity user = this.userRepository.findByEmail(loginRequestDTO.email())
                 .orElseThrow(() -> {
                     throw new UsernameNotFoundException("Usuário ou senha incorreta!");
@@ -56,7 +56,7 @@ public class AuthTokenUseCase {
             throw new UsernameNotFoundException("Usuário ou senha incorreta!");
         }
 
-        LoginResponseDTO loginToken = LoginResponseDTO.builder()
+        AccessTokenDTO loginToken = AccessTokenDTO.builder()
                 .accessToken(token(user, 30))
                 .expiresIn(expiresIn(30).toEpochMilli())
                 .build();
