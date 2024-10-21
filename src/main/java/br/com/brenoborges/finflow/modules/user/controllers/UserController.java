@@ -6,15 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.brenoborges.finflow.modules.user.dtos.ProfileRequestDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.ProfileResponseDTO;
+import br.com.brenoborges.finflow.modules.user.dtos.UpdateUserRequestDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.useCases.CreateUserUseCase;
+import br.com.brenoborges.finflow.modules.user.useCases.UpdateUserUseCase;
 import br.com.brenoborges.finflow.modules.user.useCases.UserProfileUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +38,9 @@ public class UserController {
 
     @Autowired
     private UserProfileUseCase userProfileUseCase;
+
+    @Autowired
+    private UpdateUserUseCase updateUserUseCase;
 
     @PostMapping("/signUp")
     @Operation(summary = "Cadastro do usuário", description = "Essa funcao e responsavel por cadastrar as informacoes do usuário")
@@ -61,7 +68,6 @@ public class UserController {
             }),
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
     })
-
     @SecurityRequirement(name = "jwt_auth")
     public ResponseEntity<Object> get(HttpServletRequest request) {
 
@@ -72,6 +78,23 @@ public class UserController {
             return ResponseEntity.ok().body(profile);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado!");
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    @Operation(summary = "Atualização do usuário", description = "Essa funcao e responsavel por atualizar as informacoes do usuário")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "400", description = "Usuário não encontrado")
+    })
+    @SecurityRequirement(name = "jwt_auth")
+    public ResponseEntity<Object> updateUser(@PathVariable UUID id,
+            @Valid @RequestBody UpdateUserRequestDTO updateUserRequestDTO) {
+        try {
+            this.updateUserUseCase.execute(id, updateUserRequestDTO);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

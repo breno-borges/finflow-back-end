@@ -16,6 +16,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 import br.com.brenoborges.finflow.modules.user.dtos.LoginRequestDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.AccessTokenDTO;
+import br.com.brenoborges.finflow.modules.user.dtos.ForgotPasswordRequestDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
 
@@ -50,17 +51,36 @@ public class AuthTokenUseCase {
                     throw new UsernameNotFoundException("Usuário ou senha incorreta!");
                 });
 
+        if (!user.isActive()) {
+            throw new UsernameNotFoundException("Usuário inativo!");
+        }
+
         boolean passwordMatches = this.passwordEncoder.matches(loginRequestDTO.password(), user.getPassword());
 
         if (!passwordMatches) {
             throw new UsernameNotFoundException("Usuário ou senha incorreta!");
         }
 
-        AccessTokenDTO loginToken = AccessTokenDTO.builder()
+        return AccessTokenDTO.builder()
                 .accessToken(token(user, 30))
                 .expiresIn(expiresIn(30).toEpochMilli())
                 .build();
+    }
 
-        return loginToken;
+    public AccessTokenDTO forgotPassword(ForgotPasswordRequestDTO forgotPasswordRequestDTO)
+            throws AuthenticationException {
+        UserEntity user = this.userRepository.findByEmail(forgotPasswordRequestDTO.email())
+                .orElseThrow(() -> {
+                    throw new UsernameNotFoundException("Usuário não encontrado no sistema!");
+                });
+
+        if (!user.isActive()) {
+            throw new UsernameNotFoundException("Usuário inativo!");
+        }
+
+        return AccessTokenDTO.builder()
+                .accessToken(token(user, 2))
+                .expiresIn(expiresIn(2).toEpochMilli())
+                .build();
     }
 }

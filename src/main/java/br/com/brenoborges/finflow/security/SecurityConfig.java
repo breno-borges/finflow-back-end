@@ -24,13 +24,16 @@ public class SecurityConfig {
             "/actuator/**"
     };
 
+    private static final String[] PUBLIC_ROUTES = {
+            "/user/signUp",
+            "/user/login"
+    };
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/user/profile").permitAll()
-                            .requestMatchers("/user/signUp").permitAll()
-                            .requestMatchers("/user/login").permitAll()
+                    auth.requestMatchers(PUBLIC_ROUTES).permitAll()
                             .requestMatchers(PERMITE_ALL_LIST).permitAll();
                     auth.anyRequest().authenticated();
                 })
