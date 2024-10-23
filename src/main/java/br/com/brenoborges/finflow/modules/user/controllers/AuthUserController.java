@@ -15,7 +15,6 @@ import br.com.brenoborges.finflow.modules.user.useCases.AuthTokenUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/user")
@@ -43,15 +42,14 @@ public class AuthUserController {
     @Operation(summary = "Token de recovery de senha", description = "Essa funcao e responsavel por gerar o token de recovery de senha do usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Token de acesso"),
-            @ApiResponse(responseCode = "401", description = "Acesso negado")
+            @ApiResponse(responseCode = "400", description = "Usuário não encontrado")
     })
-    @SecurityRequirement(name = "jwt_auth")
     public ResponseEntity<Object> auth(@RequestBody ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
         try {
             AccessTokenDTO token = this.authTokenUseCase.forgotPassword(forgotPasswordRequestDTO);
             return ResponseEntity.ok().body(token);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

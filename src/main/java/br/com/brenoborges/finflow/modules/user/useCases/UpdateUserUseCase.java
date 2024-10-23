@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brenoborges.finflow.exceptions.UserNotFoundException;
 import br.com.brenoborges.finflow.modules.user.dtos.UpdateUserRequestDTO;
@@ -16,6 +17,7 @@ public class UpdateUserUseCase {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     public UserEntity execute(UUID idUser, UpdateUserRequestDTO updateUserRequestDTO) {
         UserEntity user = this.userRepository.findById(idUser)
                 .orElseThrow(() -> {

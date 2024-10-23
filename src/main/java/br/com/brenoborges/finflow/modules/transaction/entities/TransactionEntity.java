@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import br.com.brenoborges.finflow.modules.transaction.dtos.NewTransactionRequestDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -37,13 +38,16 @@ public class TransactionEntity {
     private String description;
 
     @Schema(example = "250.00", requiredMode = RequiredMode.REQUIRED, description = "Valor da transacao")
-    private float value;
+    private float valueTransaction;
 
     @Schema(example = "Venda", requiredMode = RequiredMode.REQUIRED, description = "Categoria da transacao")
     private String category;
 
     @Schema(example = "07/10/2024", requiredMode = RequiredMode.REQUIRED, description = "Data da transacao")
-    private LocalDate date;
+    private LocalDate dateTransaction;
+
+    @Schema(example = "Input", requiredMode = RequiredMode.REQUIRED, description = "Tipo de transação, se é entrada ou saída")
+    private String typeTransaction;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -52,9 +56,17 @@ public class TransactionEntity {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "iduser", insertable = false, updatable = false)
+    @JoinColumn(name = "id_user", insertable = false, updatable = false)
     private UserEntity userEntity;
 
-    @Column(name = "iduser", nullable = false)
+    @Column(name = "id_user", nullable = false)
     private UUID idUser;
+
+    public TransactionEntity(NewTransactionRequestDTO newTransactionRequestDTO) {
+        this.description = newTransactionRequestDTO.description();
+        this.category = newTransactionRequestDTO.category();
+        this.valueTransaction = newTransactionRequestDTO.value();
+        this.dateTransaction = newTransactionRequestDTO.date();
+        this.typeTransaction = newTransactionRequestDTO.typeTransaction();
+    }
 }

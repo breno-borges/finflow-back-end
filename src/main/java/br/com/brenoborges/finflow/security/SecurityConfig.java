@@ -26,7 +26,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ROUTES = {
             "/user/signUp",
-            "/user/login"
+            "/user/login",
+            "/user/forgotPassword"
     };
 
     @Bean
