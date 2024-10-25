@@ -29,7 +29,7 @@ public class AuthUserController {
             @ApiResponse(responseCode = "200", description = "Token de acesso"),
             @ApiResponse(responseCode = "401", description = "Acesso negado")
     })
-    public ResponseEntity<Object> auth(@RequestBody LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<Object> authLogin(@RequestBody LoginRequestDTO loginRequestDTO) {
         try {
             AccessTokenDTO token = this.authTokenUseCase.loginToken(loginRequestDTO);
             return ResponseEntity.ok().body(token);
@@ -44,7 +44,7 @@ public class AuthUserController {
             @ApiResponse(responseCode = "200", description = "Token de acesso"),
             @ApiResponse(responseCode = "400", description = "Usuário não encontrado")
     })
-    public ResponseEntity<Object> auth(@RequestBody ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
+    public ResponseEntity<Object> authForgotPassword(@RequestBody ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
         try {
             AccessTokenDTO token = this.authTokenUseCase.forgotPassword(forgotPasswordRequestDTO);
             return ResponseEntity.ok().body(token);

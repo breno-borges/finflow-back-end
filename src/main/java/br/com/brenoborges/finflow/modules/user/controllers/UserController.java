@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,9 +68,9 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
     })
     @SecurityRequirement(name = "jwt_auth")
-    public ResponseEntity<Object> get(HttpServletRequest request) {
+    public ResponseEntity<Object> getProfile(HttpServletRequest request) {
 
-        Object idUser = request.getAttribute("id_user"); // id_user vem do security filter
+        Object idUser = request.getAttribute("id_user");
 
         try {
             ProfileResponseDTO profile = this.userProfileUseCase.execute(UUID.fromString(idUser.toString()));
@@ -81,17 +80,20 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/:{id}")
+    @PutMapping("/update/")
     @Operation(summary = "Atualização do usuário", description = "Essa funcao e responsavel por atualizar as informacoes do usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "204"),
             @ApiResponse(responseCode = "400", description = "Usuário não encontrado")
     })
     @SecurityRequirement(name = "jwt_auth")
-    public ResponseEntity<Object> updateUser(@PathVariable UUID id,
+    public ResponseEntity<Object> updateUser(HttpServletRequest request,
             @Valid @RequestBody UpdateUserRequestDTO updateUserRequestDTO) {
+
+        Object idUser = request.getAttribute("id_user");
+
         try {
-            this.updateUserUseCase.execute(id, updateUserRequestDTO);
+            this.updateUserUseCase.execute(UUID.fromString(idUser.toString()), updateUserRequestDTO);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

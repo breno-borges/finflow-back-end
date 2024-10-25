@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.brenoborges.finflow.modules.transaction.dtos.NewTransactionRequestDTO;
+import br.com.brenoborges.finflow.modules.transaction.entities.TransactionEntity;
 import br.com.brenoborges.finflow.modules.transaction.useCases.DeleteTransactionUseCase;
+import br.com.brenoborges.finflow.modules.transaction.useCases.ListTransactionUseCase;
 import br.com.brenoborges.finflow.modules.transaction.useCases.NewTransactionUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -30,6 +35,9 @@ public class TransactionController {
 
     @Autowired
     private DeleteTransactionUseCase deleteTransactionUseCase;
+
+    @Autowired
+    private ListTransactionUseCase listTransactionUseCase;
 
     @PostMapping("/newTransaction")
     @Operation(summary = "Transação", description = "Essa funcao e responsavel criar uma transação financeira")
@@ -65,6 +73,32 @@ public class TransactionController {
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/transaction/findAllWithPagination")
+    @Operation(summary = "Transações do usuário", description = "Essa funcao e responsavel por buscar todas as transações do usuário com paginação")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(schema = @Schema(implementation = TransactionEntity.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+    })
+    @SecurityRequirement(name = "jwt_auth")
+    public ResponseEntity<Object> findAllWithPagination(HttpServletRequest request,
+            @RequestParam int page,
+            @RequestParam int limit,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+
+        Object idUser = request.getAttribute("id_user");
+
+        try {
+            var transactions = this.listTransactionUseCase.execute(UUID.fromString(idUser.toString()), page, limit,
+                    startDate, endDate);
+            return ResponseEntity.ok().body(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado!");
         }
     }
 }
