@@ -99,4 +99,14 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @RequestMapping("/health")
+    public ResponseEntity<Object> health() {
+
+        try {
+            return ResponseEntity.ok().body("Funcionando");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Não funcionou");
+        }
+    }
 }

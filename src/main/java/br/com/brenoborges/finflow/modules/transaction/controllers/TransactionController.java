@@ -3,6 +3,7 @@ package br.com.brenoborges.finflow.modules.transaction.controllers;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +41,7 @@ public class TransactionController {
     private ListTransactionUseCase listTransactionUseCase;
 
     @PostMapping("/newTransaction")
-    @Operation(summary = "Transação", description = "Essa funcao e responsavel criar uma transação financeira")
+    @Operation(summary = "Criar Transação", description = "Essa funcao e responsavel criar uma transação financeira")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Transação criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Usuário não encontrado!")
@@ -94,7 +95,8 @@ public class TransactionController {
         Object idUser = request.getAttribute("id_user");
 
         try {
-            var transactions = this.listTransactionUseCase.execute(UUID.fromString(idUser.toString()), page, limit,
+            Page<TransactionEntity> transactions = this.listTransactionUseCase.execute(
+                    UUID.fromString(idUser.toString()), page, limit,
                     startDate, endDate);
             return ResponseEntity.ok().body(transactions);
         } catch (Exception e) {
