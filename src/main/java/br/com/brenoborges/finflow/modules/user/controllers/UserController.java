@@ -100,7 +100,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/health")
+    @GetMapping("/health")
     public ResponseEntity<Object> health() {
 
         try {
