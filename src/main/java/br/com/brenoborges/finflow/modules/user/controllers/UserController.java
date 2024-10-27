@@ -47,7 +47,7 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Usuário ja existe")
     })
-    public ResponseEntity<Object> signIn(@Valid @RequestBody ProfileRequestDTO profileRequestDTO) {
+    public ResponseEntity<Object> signUp(@Valid @RequestBody ProfileRequestDTO profileRequestDTO) {
         UserEntity newUser = new UserEntity(profileRequestDTO);
 
         try {
