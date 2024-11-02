@@ -22,18 +22,19 @@ public class SecurityConfig {
     @Autowired
     private SecurityFilterUser securityFilterUser;
 
-    private static final String[] PERMITE_ALL_LIST = {
+    private static final String[] SWAGGER = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/swagger-resources/**",
-            "/actuator/**"
+            "/swagger-resources/**"
     };
 
     private static final String[] PUBLIC_ROUTES = {
             "/user/signUp",
             "/user/login",
             "/user/forgotPassword",
-            "/user/health"
+            "/user/resetPassword",
+            "/health/",
+            "/actuator/**"
     };
 
     @Bean
@@ -41,7 +42,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(PUBLIC_ROUTES).permitAll()
-                            .requestMatchers(PERMITE_ALL_LIST).permitAll();
+                            .requestMatchers(SWAGGER).permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilterUser, BasicAuthenticationFilter.class)

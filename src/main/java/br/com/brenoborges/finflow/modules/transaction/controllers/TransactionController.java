@@ -86,7 +86,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
     })
     @SecurityRequirement(name = "jwt_auth")
-    public ResponseEntity<Object> findAllWithPagination(HttpServletRequest request,
+    public ResponseEntity<Object> findAllTransactionsWithPagination(HttpServletRequest request,
             @RequestParam int page,
             @RequestParam int limit,
             @RequestParam(required = false) String startDate,

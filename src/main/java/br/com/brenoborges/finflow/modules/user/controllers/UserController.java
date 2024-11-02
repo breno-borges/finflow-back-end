@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.brenoborges.finflow.modules.user.dtos.ProfileRequestDTO;
@@ -17,6 +19,7 @@ import br.com.brenoborges.finflow.modules.user.dtos.ProfileResponseDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.UpdateUserRequestDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.useCases.CreateUserUseCase;
+import br.com.brenoborges.finflow.modules.user.useCases.ResetPasswordUseCase;
 import br.com.brenoborges.finflow.modules.user.useCases.UpdateUserUseCase;
 import br.com.brenoborges.finflow.modules.user.useCases.UserProfileUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +43,9 @@ public class UserController {
 
     @Autowired
     private UpdateUserUseCase updateUserUseCase;
+
+    @Autowired
+    private ResetPasswordUseCase resetPasswordUseCase;
 
     @PostMapping("/signUp")
     @Operation(summary = "Cadastro do usuário", description = "Essa funcao e responsavel por cadastrar as informacoes do usuário")
@@ -100,13 +106,19 @@ public class UserController {
         }
     }
 
-    @GetMapping("/health")
-    public ResponseEntity<Object> health() {
-
+    @PatchMapping("/resetPassword")
+    @Operation(summary = "Reset de senha", description = "Essa funcao e responsavel por resetar a senha do usuário")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "E-mail de redefinição enviado"),
+            @ApiResponse(responseCode = "400", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<Object> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
         try {
-            return ResponseEntity.ok().body("Funcionando");
+            this.resetPasswordUseCase.resetPassword(token, newPassword);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Não funcionou");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 }
