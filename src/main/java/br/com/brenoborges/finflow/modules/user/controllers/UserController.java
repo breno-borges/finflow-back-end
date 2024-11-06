@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.brenoborges.finflow.modules.user.dtos.ProfileRequestDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.ProfileResponseDTO;
+import br.com.brenoborges.finflow.modules.user.dtos.ResetPasswordDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.UpdateUserRequestDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.useCases.CreateUserUseCase;
@@ -112,9 +113,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "E-mail de redefinição enviado"),
             @ApiResponse(responseCode = "400", description = "Usuário não encontrado")
     })
-    public ResponseEntity<Object> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+    public ResponseEntity<Object> resetPassword(@RequestParam String token,
+            @RequestBody ResetPasswordDTO resetPasswordDTO) {
         try {
-            this.resetPasswordUseCase.resetPassword(token, newPassword);
+            this.resetPasswordUseCase.resetPassword(token, resetPasswordDTO.newPaswword());
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

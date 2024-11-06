@@ -27,8 +27,11 @@ public class ResetPasswordUseCase {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+
+    public ResetPasswordUseCase(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     private void emailMessage(String email, String resetLink) {
         try {
@@ -38,10 +41,16 @@ public class ResetPasswordUseCase {
             helper.setFrom("noreply@email.com");
             helper.setTo(email);
             helper.setSubject("Redefinição de senha");
-            helper.setText("Clique no link para redefinir sua senha: " + resetLink, true);
+
+            String htmlContent = "<p>Clique no link para redefinir sua senha: "
+                    + "<a href=\"" + resetLink + "\">Clique Aqui</a></p>";
+
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
         } catch (Exception e) {
+            System.out.println("Erro:");
+            System.out.println(e.getMessage());
             throw new IllegalStateException("Falha ao enviar o e-mail", e);
         }
     }

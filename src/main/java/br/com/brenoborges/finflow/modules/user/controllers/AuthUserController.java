@@ -25,8 +25,11 @@ public class AuthUserController {
     @Autowired
     private AuthTokenUseCase authTokenUseCase;
 
-    @Autowired
-    private ResetPasswordUseCase resetPasswordUseCase;
+    private final ResetPasswordUseCase resetPasswordUseCase;
+
+    public AuthUserController(ResetPasswordUseCase resetPasswordUseCase) {
+        this.resetPasswordUseCase = resetPasswordUseCase;
+    }
 
     @PostMapping("/login")
     @Operation(summary = "Login do usuário", description = "Essa funcao e responsavel por gerar o token de acesso do usuário")
