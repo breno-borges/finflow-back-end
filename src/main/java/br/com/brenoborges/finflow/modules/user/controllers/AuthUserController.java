@@ -55,7 +55,7 @@ public class AuthUserController {
     public ResponseEntity<Object> authForgotPassword(@RequestParam String email) {
         try {
             this.authTokenUseCase.forgotPassword(email);
-            this.resetPasswordUseCase.sendEmail(email);
+            this.resetPasswordUseCase.resetPasswordEmail(email);
             return ResponseEntity.ok().body("Cheque o seu e-mail para redefinição de senha");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

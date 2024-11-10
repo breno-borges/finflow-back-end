@@ -18,6 +18,7 @@ import br.com.brenoborges.finflow.modules.user.dtos.LoginRequestDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.TokenDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
+import br.com.brenoborges.finflow.providers.JWTExpirationTime;
 
 @Service
 public class AuthTokenUseCase {
@@ -30,6 +31,9 @@ public class AuthTokenUseCase {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JWTExpirationTime jwtExpirationTime;
 
     private Instant expiresIn(long minutes) {
         return Instant.now().plus(Duration.ofMinutes(minutes));
@@ -61,8 +65,8 @@ public class AuthTokenUseCase {
         }
 
         return TokenDTO.builder()
-                .token(token(user, 30))
-                .expiresIn(expiresIn(30).toEpochMilli())
+                .token(token(user, this.jwtExpirationTime.getExpirationTimeLoginInMinutes()))
+                .expiresIn(expiresIn(this.jwtExpirationTime.getExpirationTimeLoginInMinutes()).toEpochMilli())
                 .build();
     }
 
@@ -78,8 +82,8 @@ public class AuthTokenUseCase {
         }
 
         TokenDTO token = TokenDTO.builder()
-                .token(token(user, 2))
-                .expiresIn(expiresIn(2).toEpochMilli())
+                .token(token(user, this.jwtExpirationTime.getExpirationTimeResetPasswordInMinutes()))
+                .expiresIn(expiresIn(this.jwtExpirationTime.getExpirationTimeResetPasswordInMinutes()).toEpochMilli())
                 .build();
 
         user.setResetPasswordToken(token.getToken());

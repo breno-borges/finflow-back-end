@@ -114,7 +114,7 @@ public class UserController {
             @RequestParam String email,
             @RequestBody ResetPasswordDTO resetPasswordDTO) {
         try {
-            this.resetPasswordUseCase.resetPassword(token, email, resetPasswordDTO.newPassword());
+            this.resetPasswordUseCase.resetPassword(token, email, resetPasswordDTO);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
