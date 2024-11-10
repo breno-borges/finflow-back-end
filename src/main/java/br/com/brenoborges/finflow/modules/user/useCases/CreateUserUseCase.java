@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brenoborges.finflow.exceptions.UserFoundException;
+import br.com.brenoborges.finflow.modules.user.dtos.ProfileRequestDTO;
+import br.com.brenoborges.finflow.modules.user.dtos.ProfileResponseDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
 
@@ -19,17 +21,27 @@ public class CreateUserUseCase {
     private UserRepository userRepository;
 
     @Transactional
-    public UserEntity execute(UserEntity userEntity) {
-        this.userRepository.findByEmail(userEntity.getEmail())
+    public ProfileResponseDTO execute(ProfileRequestDTO profileRequestDTO) {
+
+        UserEntity user = new UserEntity(profileRequestDTO);
+
+        this.userRepository.findByEmail(user.getEmail())
                 .ifPresent((email) -> {
                     throw new UserFoundException();
                 });
 
-        String password = passwordEncoder.encode(userEntity.getPassword());
-        userEntity.setPassword(password);
-        userEntity.setActive(true);
+        String password = passwordEncoder.encode(user.getPassword());
+        user.setPassword(password);
+        user.setActive(true);
 
-        return this.userRepository.save(userEntity);
+        this.userRepository.save(user);
+
+        return ProfileResponseDTO.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .age(user.getAge())
+                .gender(user.getGender())
+                .build();
     }
 
 }

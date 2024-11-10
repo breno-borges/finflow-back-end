@@ -1,14 +1,16 @@
 package br.com.brenoborges.finflow.modules.user.useCases;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+import br.com.brenoborges.finflow.exceptions.InvalidTokenException;
 import br.com.brenoborges.finflow.exceptions.UserNotFoundException;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
@@ -27,6 +29,9 @@ public class ResetPasswordUseCase {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${url.backend}")
+    private String urlBackEnd;
+
     private final JavaMailSender mailSender;
 
     public ResetPasswordUseCase(JavaMailSender mailSender) {
@@ -42,15 +47,15 @@ public class ResetPasswordUseCase {
             helper.setTo(email);
             helper.setSubject("Redefinição de senha");
 
-            String htmlContent = "<p>Clique no link para redefinir sua senha: "
-                    + "<a href=\"" + resetLink + "\">Clique Aqui</a></p>";
+            String htmlContent = "<p>Clique " + "<a href=\"" + resetLink + "\">aqui</a>"
+                    + " para redefinir sua senha."
+                    + "<p>Você tem até 2 minutos para redefinir a senha.</p>"
+                    + "<p>Caso expire o prazo, solicite o reset de senha novamente.</p>";
 
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
         } catch (Exception e) {
-            System.out.println("Erro:");
-            System.out.println(e.getMessage());
             throw new IllegalStateException("Falha ao enviar o e-mail", e);
         }
     }
@@ -65,19 +70,27 @@ public class ResetPasswordUseCase {
             throw new UsernameNotFoundException("Usuário inativo!");
         }
 
-        String resetLink = "http://localhost:8080/user/resetPassword?token=" + user.getResetPasswordToken();
+        String resetLink = urlBackEnd + "/user/resetPassword?token="
+                + user.getResetPasswordToken()
+                + "&email=" + email;
 
         emailMessage(email, resetLink);
     }
 
-    public void resetPassword(String token, String password) {
+    public void resetPassword(String token, String email, String password) {
 
-        String idUser = this.jwtUserProvider.validationToken(token).getSubject();
-
-        UserEntity user = this.userRepository.findById(UUID.fromString(idUser))
-                .orElseThrow(() -> {
+        UserEntity user = this.userRepository
+                .findByEmail(email).orElseThrow(() -> {
                     throw new UserNotFoundException();
                 });
+
+        DecodedJWT tokenDecoded = this.jwtUserProvider.validationToken(token);
+
+        if (tokenDecoded == null) {
+            user.setResetPasswordToken(null);
+            this.userRepository.save(user);
+            throw new InvalidTokenException();
+        }
 
         user.setPassword(passwordEncoder.encode(password));
         user.setResetPasswordToken(null);

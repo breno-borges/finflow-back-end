@@ -18,7 +18,6 @@ import br.com.brenoborges.finflow.modules.user.dtos.ProfileRequestDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.ProfileResponseDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.ResetPasswordDTO;
 import br.com.brenoborges.finflow.modules.user.dtos.UpdateUserRequestDTO;
-import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.useCases.CreateUserUseCase;
 import br.com.brenoborges.finflow.modules.user.useCases.ResetPasswordUseCase;
 import br.com.brenoborges.finflow.modules.user.useCases.UpdateUserUseCase;
@@ -55,11 +54,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Usuário ja existe")
     })
     public ResponseEntity<Object> signUp(@Valid @RequestBody ProfileRequestDTO profileRequestDTO) {
-        UserEntity newUser = new UserEntity(profileRequestDTO);
-
         try {
-            this.createUserUseCase.execute(newUser);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            ProfileResponseDTO profile = this.createUserUseCase.execute(profileRequestDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(profile);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -108,15 +105,16 @@ public class UserController {
     }
 
     @PatchMapping("/resetPassword")
-    @Operation(summary = "Reset de senha", description = "Essa funcao e responsavel por resetar a senha do usuário")
+    @Operation(summary = "Reset de senha", description = "Essa funcao e responsavel por resetar a senha do usuário a partir do e-mail enviado com o link que contém o token JWT")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "E-mail de redefinição enviado"),
             @ApiResponse(responseCode = "400", description = "Usuário não encontrado")
     })
     public ResponseEntity<Object> resetPassword(@RequestParam String token,
+            @RequestParam String email,
             @RequestBody ResetPasswordDTO resetPasswordDTO) {
         try {
-            this.resetPasswordUseCase.resetPassword(token, resetPasswordDTO.newPaswword());
+            this.resetPasswordUseCase.resetPassword(token, email, resetPasswordDTO.newPassword());
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
