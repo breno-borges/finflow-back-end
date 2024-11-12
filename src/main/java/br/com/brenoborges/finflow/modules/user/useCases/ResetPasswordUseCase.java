@@ -28,10 +28,6 @@ public class ResetPasswordUseCase {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private String resetLink;
-    private String subject;
-    private String text;
-
     @Value("${url.backend}")
     private String urlBackEnd;
 
@@ -51,18 +47,11 @@ public class ResetPasswordUseCase {
             throw new UsernameNotFoundException("Usuário inativo!");
         }
 
-        this.resetLink = urlBackEnd + "/user/resetPassword?token="
+        String resetLink = urlBackEnd + "/user/resetPassword?token="
                 + user.getResetPasswordToken()
                 + "&email=" + email;
 
-        this.subject = "Redefinição de senha";
-
-        this.text = "<p>Clique " + "<a href=\"" + resetLink + "\">aqui</a>"
-                + " para redefinir sua senha."
-                + "<p>Você tem até 2 minutos para redefinir a senha.</p>"
-                + "<p>Caso expire o prazo, solicite o reset de senha novamente.</p>";
-
-        emailService.sendEmail(email, subject, text);
+        emailService.sendEmailResetPassword(email, resetLink);
     }
 
     public void resetPassword(String token, String email, ResetPasswordDTO resetPasswordDTO) {

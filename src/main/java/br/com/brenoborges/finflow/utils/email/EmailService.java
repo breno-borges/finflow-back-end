@@ -15,7 +15,23 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    public void sendEmail(String email, String subject, String text) {
+    private String subject;
+    private String text;
+
+    public void sendEmailResetPassword(String email, String resetLink) {
+
+        this.subject = "Redefinição de senha";
+
+        this.text = "<p>Clique " + "<a href=\"" + resetLink + "\">aqui</a>"
+                + " para redefinir sua senha."
+                + "<p>Você tem até 5 minutos para redefinir a senha.</p>"
+                + "<p>Caso expire o prazo, solicite o reset de senha novamente.</p>";
+
+        sendEmail(email, subject, text);
+
+    }
+
+    private void sendEmail(String email, String subject, String text) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);

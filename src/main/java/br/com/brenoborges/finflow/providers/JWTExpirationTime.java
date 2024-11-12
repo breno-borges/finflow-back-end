@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class JWTExpirationTime {
 
-    private int expirationTimeLoginInMinutes = 30;
-    private int expirationTimeResetPasswordInMinutes = 2;
+    private int expirationTimeLoginInMinutes = 60;
+    private int expirationTimeResetPasswordInMinutes = 5;
 
 }

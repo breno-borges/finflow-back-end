@@ -23,12 +23,12 @@ public class CreateUserUseCase {
     @Transactional
     public ProfileResponseDTO execute(ProfileRequestDTO profileRequestDTO) {
 
-        UserEntity user = new UserEntity(profileRequestDTO);
-
-        this.userRepository.findByEmail(user.getEmail())
+        this.userRepository.findByEmail(profileRequestDTO.email())
                 .ifPresent((email) -> {
                     throw new UserFoundException();
                 });
+
+        UserEntity user = new UserEntity(profileRequestDTO);
 
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
