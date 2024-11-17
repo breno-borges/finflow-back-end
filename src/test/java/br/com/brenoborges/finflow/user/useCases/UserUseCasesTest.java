@@ -7,7 +7,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +42,9 @@ public class UserUseCasesTest {
     @DisplayName("Should be able to create a new user")
     public void shouldBeAbleToCreateANewUser() throws Exception {
 
-        ProfileRequestDTO profileRequestDTO = new ProfileRequestDTO("Zezinho", "email@email.com", 30, "123456", "Male");
+        ProfileRequestDTO profileRequestDTO = new ProfileRequestDTO(
+                UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "Zezinho", "email@email.com", 30, "123456",
+                LocalDateTime.now(), "Male");
 
         when(this.userRepository.findByEmail(profileRequestDTO.email())).thenReturn(Optional.empty());
         when(this.passwordEncoder.encode(profileRequestDTO.password())).thenReturn("Password Encoded");
@@ -61,7 +65,9 @@ public class UserUseCasesTest {
     @Test
     @DisplayName("Should not be able to create a new user if the user already exists")
     public void shouldNotBeAbleToCreateANewUser() throws Exception {
-        ProfileRequestDTO profileRequestDTO = new ProfileRequestDTO("Zezinho", "email@email.com", 30, "123456", "Male");
+        ProfileRequestDTO profileRequestDTO = new ProfileRequestDTO(
+                UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "Zezinho", "email@email.com", 30, "123456",
+                LocalDateTime.now(), "Male");
 
         when(this.userRepository.findByEmail(profileRequestDTO.email())).thenReturn(Optional.of(new UserEntity()));
 
