@@ -80,7 +80,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/")
+    @PutMapping("/update")
     @Operation(summary = "Atualização do usuário", description = "Essa funcao e responsavel por atualizar as informacoes do usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "204"),

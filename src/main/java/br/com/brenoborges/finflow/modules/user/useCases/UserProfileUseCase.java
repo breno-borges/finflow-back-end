@@ -24,10 +24,12 @@ public class UserProfileUseCase {
                 });
 
         return ProfileResponseDTO.builder()
+                .idUser(user.getIdUser())
                 .name(user.getName())
                 .email(user.getEmail())
                 .age(user.getAge())
                 .gender(user.getGender())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

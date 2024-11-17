@@ -57,11 +57,13 @@ public class UserEntity {
     private LocalDateTime updatedAt;
 
     public UserEntity(ProfileRequestDTO profileRequestDTO) {
+        this.idUser = profileRequestDTO.idUser();
         this.name = profileRequestDTO.name();
         this.age = profileRequestDTO.age();
         this.email = profileRequestDTO.email();
         this.gender = profileRequestDTO.gender();
         this.password = profileRequestDTO.password();
+        this.createdAt = profileRequestDTO.createdAt();
     }
 
 }
