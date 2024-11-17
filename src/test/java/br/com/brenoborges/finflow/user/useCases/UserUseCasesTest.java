@@ -25,7 +25,7 @@ import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
 import br.com.brenoborges.finflow.modules.user.useCases.CreateUserUseCase;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateUserUseCaseTest {
+public class UserUseCasesTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;

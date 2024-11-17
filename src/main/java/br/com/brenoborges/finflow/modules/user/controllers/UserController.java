@@ -50,8 +50,10 @@ public class UserController {
     @PostMapping("/signUp")
     @Operation(summary = "Cadastro do usuário", description = "Essa funcao e responsavel por cadastrar as informacoes do usuário")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Usuário ja existe")
+            @ApiResponse(responseCode = "201", content = {
+                    @Content(schema = @Schema(implementation = ProfileResponseDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "E-mail já cadastrado no sistema!")
     })
     public ResponseEntity<Object> signUp(@Valid @RequestBody ProfileRequestDTO profileRequestDTO) {
         try {
