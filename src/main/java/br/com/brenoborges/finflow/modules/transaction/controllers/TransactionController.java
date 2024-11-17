@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.brenoborges.finflow.modules.transaction.dtos.ListTransactionsResponseDTO;
 import br.com.brenoborges.finflow.modules.transaction.dtos.NewTransactionRequestDTO;
-import br.com.brenoborges.finflow.modules.transaction.entities.TransactionEntity;
 import br.com.brenoborges.finflow.modules.transaction.useCases.DeleteTransactionUseCase;
 import br.com.brenoborges.finflow.modules.transaction.useCases.ListTransactionUseCase;
 import br.com.brenoborges.finflow.modules.transaction.useCases.NewTransactionUseCase;
@@ -81,12 +81,12 @@ public class TransactionController {
     @Operation(summary = "Transações do usuário", description = "Essa funcao e responsavel por buscar todas as transações do usuário com paginação")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {
-                    @Content(schema = @Schema(implementation = TransactionEntity.class))
+                    @Content(schema = @Schema(implementation = ListTransactionsResponseDTO.class))
             }),
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
     })
     @SecurityRequirement(name = "jwt_auth")
-    public ResponseEntity<Object> findAllWithPagination(HttpServletRequest request,
+    public ResponseEntity<Object> findAllTransactionsWithPagination(HttpServletRequest request,
             @RequestParam int page,
             @RequestParam int limit,
             @RequestParam(required = false) String startDate,
@@ -95,7 +95,7 @@ public class TransactionController {
         Object idUser = request.getAttribute("id_user");
 
         try {
-            Page<TransactionEntity> transactions = this.listTransactionUseCase.execute(
+            Page<ListTransactionsResponseDTO> transactions = this.listTransactionUseCase.execute(
                     UUID.fromString(idUser.toString()), page, limit,
                     startDate, endDate);
             return ResponseEntity.ok().body(transactions);

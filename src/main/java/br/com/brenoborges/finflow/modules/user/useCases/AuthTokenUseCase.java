@@ -15,10 +15,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import br.com.brenoborges.finflow.modules.user.dtos.LoginRequestDTO;
-import br.com.brenoborges.finflow.modules.user.dtos.AccessTokenDTO;
-import br.com.brenoborges.finflow.modules.user.dtos.ForgotPasswordRequestDTO;
+import br.com.brenoborges.finflow.modules.user.dtos.TokenDTO;
 import br.com.brenoborges.finflow.modules.user.entities.UserEntity;
 import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
+import br.com.brenoborges.finflow.providers.JWTExpirationTime;
 
 @Service
 public class AuthTokenUseCase {
@@ -31,6 +31,9 @@ public class AuthTokenUseCase {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JWTExpirationTime jwtExpirationTime;
 
     private Instant expiresIn(long minutes) {
         return Instant.now().plus(Duration.ofMinutes(minutes));
@@ -45,7 +48,7 @@ public class AuthTokenUseCase {
                 .sign(algorithm);
     }
 
-    public AccessTokenDTO loginToken(LoginRequestDTO loginRequestDTO) throws AuthenticationException {
+    public TokenDTO loginToken(LoginRequestDTO loginRequestDTO) throws AuthenticationException {
         UserEntity user = this.userRepository.findByEmail(loginRequestDTO.email())
                 .orElseThrow(() -> {
                     throw new UsernameNotFoundException("Usuário ou senha incorreta!");
@@ -61,15 +64,15 @@ public class AuthTokenUseCase {
             throw new UsernameNotFoundException("Usuário ou senha incorreta!");
         }
 
-        return AccessTokenDTO.builder()
-                .accessToken(token(user, 30))
-                .expiresIn(expiresIn(30).toEpochMilli())
+        return TokenDTO.builder()
+                .token(token(user, this.jwtExpirationTime.getExpirationTimeLoginInMinutes()))
+                .expiresIn(expiresIn(this.jwtExpirationTime.getExpirationTimeLoginInMinutes()).toEpochMilli())
                 .build();
     }
 
-    public AccessTokenDTO forgotPassword(ForgotPasswordRequestDTO forgotPasswordRequestDTO)
+    public void forgotPassword(String email)
             throws AuthenticationException {
-        UserEntity user = this.userRepository.findByEmail(forgotPasswordRequestDTO.email())
+        UserEntity user = this.userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     throw new UsernameNotFoundException("Usuário não encontrado no sistema!");
                 });
@@ -78,9 +81,13 @@ public class AuthTokenUseCase {
             throw new UsernameNotFoundException("Usuário inativo!");
         }
 
-        return AccessTokenDTO.builder()
-                .accessToken(token(user, 2))
-                .expiresIn(expiresIn(2).toEpochMilli())
+        TokenDTO token = TokenDTO.builder()
+                .token(token(user, this.jwtExpirationTime.getExpirationTimeResetPasswordInMinutes()))
+                .expiresIn(expiresIn(this.jwtExpirationTime.getExpirationTimeResetPasswordInMinutes()).toEpochMilli())
                 .build();
+
+        user.setResetPasswordToken(token.getToken());
+
+        this.userRepository.save(user);
     }
 }

@@ -1,15 +1,17 @@
-FROM ubuntu:latest AS build
+FROM ubuntu:latest
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
-COPY . .
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk maven && \
+    apt-get clean;
 
-RUN apt-get install maven -y
-RUN mvn clean install
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV MAVEN_HOME=/usr/share/maven
+ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin
 
-FROM openjdk:17-jdk-slim
-EXPOSE 8080
+WORKDIR /app
 
-COPY --from=build /target/finflow-1.0.0.jar app.jar
+COPY . /app
 
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+RUN mvn clean package -DskipTests
+
+CMD ["java", "-jar", "target/finflow-back-end-0.0.1-SNAPSHOT.jar"]
