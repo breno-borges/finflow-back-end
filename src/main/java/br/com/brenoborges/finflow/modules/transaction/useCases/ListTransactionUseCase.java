@@ -1,5 +1,6 @@
 package br.com.brenoborges.finflow.modules.transaction.useCases;
 
+import java.util.List;
 import java.util.UUID;
 import java.time.LocalDate;
 
@@ -25,7 +26,7 @@ public class ListTransactionUseCase {
     @Autowired
     private UserRepository userRepository;
 
-    public Page<ListTransactionsResponseDTO> execute(UUID idUser, int page, int limit, String startDateString,
+    public ListTransactionsResponseDTO execute(UUID idUser, int page, int limit, String startDateString,
             String endDateString) {
 
         this.userRepository.findById(idUser)
@@ -36,7 +37,7 @@ public class ListTransactionUseCase {
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "dateTransaction"));
         Page<TransactionEntity> transactions;
 
-        if (startDateString != null && endDateString != null) {
+        if (startDateString != "" && endDateString != "") {
             LocalDate startDate = LocalDate.parse(startDateString);
             LocalDate endDate = LocalDate.parse(endDateString);
 
@@ -47,21 +48,26 @@ public class ListTransactionUseCase {
             transactions = this.transactionRepository.findAllByIdUser(idUser, pageable);
         }
 
-        return transactions.map(this::toListTransactionsResponseDTO);
+        var transactionsCreditAmount= transactions.getContent().stream()
+        .filter(t -> "credit".equalsIgnoreCase(t.getTypeTransaction()))
+                .mapToDouble(TransactionEntity::getValueTransaction)
+                .sum();
+        var transactionsDebitAmount = transactions.getContent().stream()
+                .filter(t -> "debit".equalsIgnoreCase(t.getTypeTransaction()))
+                .mapToDouble(TransactionEntity::getValueTransaction)
+                .sum();
+
+
+        var finalTransactionsAmount = transactionsCreditAmount - transactionsDebitAmount;
+        return ListTransactionsResponseDTO.builder()
+        .data(transactions.toList())
+        .transactionsAmount(finalTransactionsAmount)
+        .creditTransactionsAmount(transactionsCreditAmount)
+        .debitTransactionsAmount(transactionsDebitAmount)
+        .page(page + 1)
+        .total(transactions.getNumberOfElements())
+        .lastPage(transactions.getTotalPages())
+        .build();
     }
 
-    private ListTransactionsResponseDTO toListTransactionsResponseDTO(TransactionEntity transaction) {
-        return ListTransactionsResponseDTO.builder()
-                .idTransaction(transaction.getIdTransaction())
-                .description(transaction.getDescription())
-                .valueTransaction(transaction.getValueTransaction())
-                .category(transaction.getCategory())
-                .dateTransaction(transaction.getDateTransaction())
-                .typeTransaction(transaction.getTypeTransaction())
-                .createdAt(transaction.getCreatedAt())
-                .updatedAt(transaction.getUpdatedAt())
-                .idUser(transaction.getUserEntity().getIdUser())
-                .nameUser(transaction.getUserEntity().getName())
-                .build();
-    }
 }

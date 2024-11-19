@@ -69,4 +69,9 @@ public class TransactionEntity {
         this.dateTransaction = newTransactionRequestDTO.date();
         this.typeTransaction = newTransactionRequestDTO.typeTransaction();
     }
+
+    public String getFormatedDate(){
+        return this.dateTransaction.toString();
+    }
+
 }
