@@ -93,9 +93,12 @@ public class TransactionController {
             @RequestParam(required = false) String endDate) {
 
         Object idUser = request.getAttribute("id_user");
+        System.out.println(page);
+        System.out.println(limit);
+        System.out.println(idUser.toString());
 
         try {
-            Page<ListTransactionsResponseDTO> transactions = this.listTransactionUseCase.execute(
+            ListTransactionsResponseDTO transactions = this.listTransactionUseCase.execute(
                     UUID.fromString(idUser.toString()), page, limit,
                     startDate, endDate);
             return ResponseEntity.ok().body(transactions);
