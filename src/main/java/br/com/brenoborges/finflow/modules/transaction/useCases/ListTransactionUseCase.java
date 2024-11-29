@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import br.com.brenoborges.finflow.exceptions.UserNotFoundException;
 import br.com.brenoborges.finflow.modules.transaction.dtos.CategoryTransactionsDTO;
 import br.com.brenoborges.finflow.modules.transaction.dtos.ListTransactionsResponseDTO;
-import br.com.brenoborges.finflow.modules.transaction.entities.Category;
 import br.com.brenoborges.finflow.modules.transaction.entities.TransactionEntity;
 import br.com.brenoborges.finflow.modules.transaction.repositories.TransactionRepository;
 import br.com.brenoborges.finflow.modules.user.repositories.UserRepository;
@@ -83,18 +82,12 @@ public class ListTransactionUseCase {
                     throw new UserNotFoundException();
                 });
 
-        Category category1 = new Category("Receitas");
-        Category category2 = new Category("Reservas Financeiras");
-        Category category3 = new Category("Despesas Gerais");
-        Category category4 = new Category("Custos e Despesas Fixos");
-        Category category5 = new Category("Custos e Despesas Variáveis");
-
-        List<Category> categories = new ArrayList<>();
-        categories.add(category1);
-        categories.add(category2);
-        categories.add(category3);
-        categories.add(category4);
-        categories.add(category5);
+        List<String> categories = new ArrayList<>();
+        categories.add("Receitas");
+        categories.add("Reservas Financeiras");
+        categories.add("Despesas Gerais");
+        categories.add("Custos e Despesas Fixos");
+        categories.add("Custos e Despesas Variáveis");
 
         return CategoryTransactionsDTO.builder()
                 .categories(categories).build();

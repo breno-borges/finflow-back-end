@@ -1,7 +1,5 @@
 package br.com.brenoborges.finflow.modules.transaction.dtos;
 
-import br.com.brenoborges.finflow.modules.transaction.entities.Category;
-
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CategoryTransactionsDTO {
 
-    private List<Category> categories;
+    private List<String> categories;
 
 }
