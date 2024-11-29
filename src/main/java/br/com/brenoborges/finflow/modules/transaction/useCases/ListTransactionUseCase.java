@@ -40,7 +40,7 @@ public class ListTransactionUseCase {
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "dateTransaction"));
         Page<TransactionEntity> transactions;
 
-        if (startDateString != "" && endDateString != "") {
+        if (startDateString != "" && endDateString != "" && description != "") {
             LocalDate startDate = LocalDate.parse(startDateString);
             LocalDate endDate = LocalDate.parse(endDateString);
 
