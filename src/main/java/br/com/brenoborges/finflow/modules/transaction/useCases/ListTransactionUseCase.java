@@ -30,7 +30,7 @@ public class ListTransactionUseCase {
     private UserRepository userRepository;
 
     public ListTransactionsResponseDTO execute(UUID idUser, int page, int limit, String startDateString,
-            String endDateString) {
+            String endDateString, String description) {
 
         this.userRepository.findById(idUser)
                 .orElseThrow(() -> {
@@ -44,9 +44,12 @@ public class ListTransactionUseCase {
             LocalDate startDate = LocalDate.parse(startDateString);
             LocalDate endDate = LocalDate.parse(endDateString);
 
-            transactions = this.transactionRepository.findAllByIdUserAndDateTransactionBetween(idUser, pageable,
+            transactions = this.transactionRepository.findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(
+                    idUser,
+                    pageable,
                     startDate,
-                    endDate);
+                    endDate,
+                    description);
         } else {
             transactions = this.transactionRepository.findAllByIdUser(idUser, pageable);
         }

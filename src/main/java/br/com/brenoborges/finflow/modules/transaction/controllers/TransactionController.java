@@ -90,14 +90,15 @@ public class TransactionController {
             @RequestParam int page,
             @RequestParam int limit,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String description) {
 
         Object idUser = request.getAttribute("id_user");
 
         try {
             ListTransactionsResponseDTO transactions = this.listTransactionUseCase.execute(
                     UUID.fromString(idUser.toString()), page, limit,
-                    startDate, endDate);
+                    startDate, endDate, description);
             return ResponseEntity.ok().body(transactions);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado!");

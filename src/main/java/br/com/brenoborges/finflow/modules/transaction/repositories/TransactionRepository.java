@@ -13,6 +13,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
 
     Page<TransactionEntity> findAllByIdUser(UUID idUser, Pageable pageable);
 
-    Page<TransactionEntity> findAllByIdUserAndDateTransactionBetween(UUID idUser, Pageable pageable,
-            LocalDate startDate, LocalDate endDate);
+    Page<TransactionEntity> findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(UUID idUser,
+            Pageable pageable,
+            LocalDate startDate, LocalDate endDate, String description);
 }
