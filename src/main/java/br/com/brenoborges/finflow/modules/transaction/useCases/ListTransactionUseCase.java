@@ -40,18 +40,19 @@ public class ListTransactionUseCase {
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "dateTransaction"));
         Page<TransactionEntity> transactions;
 
-        if (startDateString != "" && endDateString != "" && description != "") {
+        if (startDateString != "" && endDateString != "") {
             LocalDate startDate = LocalDate.parse(startDateString);
             LocalDate endDate = LocalDate.parse(endDateString);
 
             transactions = this.transactionRepository.findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(
                     idUser,
+                    description,
                     pageable,
                     startDate,
-                    endDate,
-                    description);
+                    endDate);
         } else {
-            transactions = this.transactionRepository.findAllByIdUser(idUser, pageable);
+            transactions = this.transactionRepository.findAllByIdUserAndDescriptionContaining(idUser, description,
+                    pageable);
         }
 
         var transactionsCreditAmount = transactions.getContent().stream()
