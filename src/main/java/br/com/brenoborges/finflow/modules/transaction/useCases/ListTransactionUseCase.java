@@ -38,6 +38,7 @@ public class ListTransactionUseCase {
 
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "dateTransaction"));
         Page<TransactionEntity> transactions;
+        List<TransactionEntity> transactionsList;
 
         if (startDateString != "" && endDateString != "") {
             LocalDate startDate = LocalDate.parse(startDateString);
@@ -49,19 +50,29 @@ public class ListTransactionUseCase {
                     pageable,
                     startDate,
                     endDate);
+
+            transactionsList = this.transactionRepository
+                    .findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(
+                            idUser,
+                            description,
+                            startDate,
+                            endDate);
         } else {
             transactions = this.transactionRepository.findAllByIdUserAndDescriptionContaining(idUser, description,
                     pageable);
+            transactionsList = this.transactionRepository.findAllByIdUserAndDescriptionContaining(idUser, description);
         }
 
-        var transactionsCreditAmount = transactions.getContent().stream()
-                .filter(t -> "credit".equalsIgnoreCase(t.getTypeTransaction()))
-                .mapToDouble(TransactionEntity::getValueTransaction)
-                .sum();
-        var transactionsDebitAmount = transactions.getContent().stream()
-                .filter(t -> "debit".equalsIgnoreCase(t.getTypeTransaction()))
-                .mapToDouble(TransactionEntity::getValueTransaction)
-                .sum();
+        var transactionsCreditAmount = 0;
+        var transactionsDebitAmount = 0;
+
+        for (TransactionEntity transaction : transactionsList) {
+            if (transaction.getTypeTransaction().equalsIgnoreCase("credit")) {
+                transactionsCreditAmount += transaction.getValueTransaction();
+            } else {
+                transactionsDebitAmount += transaction.getValueTransaction();
+            }
+        }
 
         var finalTransactionsAmount = transactionsCreditAmount - transactionsDebitAmount;
         return ListTransactionsResponseDTO.builder()

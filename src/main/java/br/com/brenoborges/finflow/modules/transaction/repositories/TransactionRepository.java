@@ -1,5 +1,6 @@
 package br.com.brenoborges.finflow.modules.transaction.repositories;
 
+import java.util.List;
 import java.util.UUID;
 import java.time.LocalDate;
 
@@ -16,5 +17,11 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     Page<TransactionEntity> findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(UUID idUser,
             String description,
             Pageable pageable,
+            LocalDate startDate, LocalDate endDate);
+
+    List<TransactionEntity> findAllByIdUserAndDescriptionContaining(UUID idUser, String description);
+
+    List<TransactionEntity> findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(UUID idUser,
+            String description,
             LocalDate startDate, LocalDate endDate);
 }
