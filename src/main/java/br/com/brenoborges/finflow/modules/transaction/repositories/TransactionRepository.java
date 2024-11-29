@@ -19,9 +19,8 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
             Pageable pageable,
             LocalDate startDate, LocalDate endDate);
 
-    List<TransactionEntity> findAllByIdUserAndDescriptionContaining(UUID idUser, String description);
+    List<TransactionEntity> findAllByIdUser(UUID idUser);
 
-    List<TransactionEntity> findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(UUID idUser,
-            String description,
+    List<TransactionEntity> findAllByIdUserAndDateTransactionBetween(UUID idUser,
             LocalDate startDate, LocalDate endDate);
 }

@@ -28,8 +28,8 @@ public class ResetPasswordUseCase {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("${url.backend}")
-    private String urlBackEnd;
+    @Value("${url.frontend}")
+    private String urlFrontend;
 
     private final EmailService emailService;
 
@@ -47,7 +47,7 @@ public class ResetPasswordUseCase {
             throw new UsernameNotFoundException("Usuário inativo!");
         }
 
-        String resetLink = urlBackEnd + "/user/resetPassword?token="
+        String resetLink = urlFrontend + "/auth/passwordRecover/changePassword?token="
                 + user.getResetPasswordToken()
                 + "&email=" + email;
 

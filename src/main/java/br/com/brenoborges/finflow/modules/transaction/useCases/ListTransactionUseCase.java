@@ -52,15 +52,14 @@ public class ListTransactionUseCase {
                     endDate);
 
             transactionsList = this.transactionRepository
-                    .findAllByIdUserAndDescriptionContainingAndDateTransactionBetween(
+                    .findAllByIdUserAndDateTransactionBetween(
                             idUser,
-                            description,
                             startDate,
                             endDate);
         } else {
             transactions = this.transactionRepository.findAllByIdUserAndDescriptionContaining(idUser, description,
                     pageable);
-            transactionsList = this.transactionRepository.findAllByIdUserAndDescriptionContaining(idUser, description);
+            transactionsList = this.transactionRepository.findAllByIdUser(idUser);
         }
 
         var transactionsCreditAmount = 0;
