@@ -1,8 +1,6 @@
 package br.com.brenoborges.finflow.modules.transaction.dtos;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import br.com.brenoborges.finflow.modules.transaction.entities.TransactionEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
 
 @Data
 @Builder
@@ -27,10 +23,10 @@ public class ListTransactionsResponseDTO {
         private double creditTransactionsAmount;
         @Schema()
         private double debitTransactionsAmount;
-        @Schema(example="1",requiredMode = RequiredMode.REQUIRED,description = "Pagina Atual")
+        @Schema(example = "1", requiredMode = RequiredMode.REQUIRED, description = "Pagina Atual")
         private int page;
-        @Schema(example="1",requiredMode = RequiredMode.REQUIRED,description = "Total de paginas")
+        @Schema(example = "1", requiredMode = RequiredMode.REQUIRED, description = "Total de paginas")
         private int total;
-        @Schema(example="1",requiredMode = RequiredMode.REQUIRED,description = "Ultima pagina")
+        @Schema(example = "1", requiredMode = RequiredMode.REQUIRED, description = "Ultima pagina")
         private int lastPage;
 }

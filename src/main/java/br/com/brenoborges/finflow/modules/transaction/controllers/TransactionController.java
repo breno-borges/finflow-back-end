@@ -3,7 +3,6 @@ package br.com.brenoborges.finflow.modules.transaction.controllers;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.brenoborges.finflow.modules.transaction.dtos.CategoryTransactionsDTO;
 import br.com.brenoborges.finflow.modules.transaction.dtos.ListTransactionsResponseDTO;
 import br.com.brenoborges.finflow.modules.transaction.dtos.NewTransactionRequestDTO;
 import br.com.brenoborges.finflow.modules.transaction.useCases.DeleteTransactionUseCase;
@@ -93,15 +93,34 @@ public class TransactionController {
             @RequestParam(required = false) String endDate) {
 
         Object idUser = request.getAttribute("id_user");
-        System.out.println(page);
-        System.out.println(limit);
-        System.out.println(idUser.toString());
 
         try {
             ListTransactionsResponseDTO transactions = this.listTransactionUseCase.execute(
                     UUID.fromString(idUser.toString()), page, limit,
                     startDate, endDate);
             return ResponseEntity.ok().body(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado!");
+        }
+    }
+
+    @GetMapping("/transaction/categories")
+    @Operation(summary = "Categorias de Transacao", description = "Essa funcao e responsavel por buscar todas as categorias das transações")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(schema = @Schema(implementation = CategoryTransactionsDTO.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado")
+    })
+    @SecurityRequirement(name = "jwt_auth")
+    public ResponseEntity<Object> findAllCategories(HttpServletRequest request) {
+
+        Object idUser = request.getAttribute("id_user");
+
+        try {
+            CategoryTransactionsDTO categories = this.listTransactionUseCase.categories(
+                    UUID.fromString(idUser.toString()));
+            return ResponseEntity.ok().body(categories);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado!");
         }
