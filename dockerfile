@@ -1,17 +1,24 @@
-FROM ubuntu:latest
-
-RUN apt-get update && \
-    apt-get install -y openjdk-17-jdk maven && \
-    apt-get clean;
-
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV MAVEN_HOME=/usr/share/maven
-ENV PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin
-
+# Etapa 1: build com Maven
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-COPY . /app
+# Copia o pom.xml e baixa as dependências primeiro
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
+# Copia o restante do código e compila
+COPY src ./src
 RUN mvn clean package -DskipTests
 
-CMD ["java", "-jar", "target/finflow-back-end-0.0.1-SNAPSHOT.jar"]
+# Etapa 2: imagem final só com JDK
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+
+# Copia o .jar do build anterior
+COPY --from=build /app/target/*.jar app.jar
+
+# Expõe a porta padrão do Spring Boot
+EXPOSE 8080
+
+# Executa a aplicação
+ENTRYPOINT ["java", "-jar", "app.jar"]
