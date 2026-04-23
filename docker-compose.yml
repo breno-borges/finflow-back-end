@@ -1,0 +1,37 @@
+version: "3.8"
+
+networks:
+  gv-network:
+    driver: bridge
+
+services:
+  postgres:
+    container_name: finflow_postgres
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=finflow
+    networks:
+      - gv-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    container_name: finflow_api
+    build: .
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    networks:
+      - gv-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/finflow
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+
+volumes:
+  pgdata:
